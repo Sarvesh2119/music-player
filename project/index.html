@@ -14,6 +14,9 @@
             <h3 id="songName"></h3>
         </div>
         <audio id="audioPlayer" controls onended="nextSong()"></audio>
+        <!-- HTML -->
+<input type="range" id="seekBar" value="0" max="100">
+
         <div id="controls">
             <button id="prevButton" onclick="prevSong()">&#9664;</button>
             <button id="nextButton" onclick="nextSong()">&#9654;</button>

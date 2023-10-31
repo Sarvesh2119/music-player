@@ -109,6 +109,18 @@ function shuffleArray(array) {
     }
     return array;
 }
+// JavaScript
+var seekBar = document.getElementById("seekBar");
+
+seekBar.addEventListener("change", function () {
+    var time = audioPlayer.duration * (seekBar.value / 100);
+    audioPlayer.currentTime = time;
+});
+
+audioPlayer.addEventListener("timeupdate", function () {
+    var value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+    seekBar.value = value;
+});
 
 updateSongInfo();
 
