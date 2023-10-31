@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Music Player</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body onload="loadInitialSong()">
+<div class="container">
+    <div id="player">
+        <h1>Music Player</h1>
+        <div id="songInfo">
+            <img id="songThumbnail" src="" alt="Song Thumbnail">
+            <h2 id="artistName"></h2>
+            <h3 id="songName"></h3>
+        </div>
+        <audio id="audioPlayer" controls onended="nextSong()"></audio>
+        <div id="controls">
+            <button id="prevButton" onclick="prevSong()">&#9664;</button>
+            <button id="nextButton" onclick="nextSong()">&#9654;</button>
+            <button id="shuffleButton" onclick="toggleShuffle()" class="shuffle-off">&#9851;</button>
+        </div> 
+    </div>
+        </div>      
+    <script src="script.js"></script>
+</body>
+</html>
+
