@@ -2,41 +2,46 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const server = http.createServer((req, res) => {
-    // Map file requests to their corresponding file paths
-    const filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
+const hostname = '127.0.0.1'; // Set your desired hostname or '0.0.0.0' to make it accessible externally
+const port = 3000; // Set your desired port number
 
-    // Check if the requested file exists
-    fs.access(filePath, fs.constants.F_OK, (err) => {
+const server = http.createServer((req, res) => {
+    const filePath = req.url === '/' ? '/index.html' : req.url;
+    const fileExtension = path.extname(filePath);
+    const contentType = getContentType(fileExtension);
+
+    fs.readFile(__dirname + filePath, (err, data) => {
         if (err) {
-            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.end('Not Found');
+            res.writeHead(404, { 'Content-Type': 'text/html' });
+            res.end('404 Not Found');
         } else {
-            // Read and serve the requested file with the appropriate content type
-            const contentType = getContentType(filePath);
             res.writeHead(200, { 'Content-Type': contentType });
-            const stream = fs.createReadStream(filePath);
-            stream.pipe(res);
+            res.end(data);
         }
     });
 });
 
-server.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+server.listen(port, hostname, () => {
+    const fullURL = `http://${hostname}:${port}`;
+    console.log(`Server is running at ${fullURL}`);
 });
 
-// Function to determine the content type based on the file extension
-function getContentType(filePath) {
-    const extname = path.extname(filePath);
-    switch (extname) {
+function getContentType(fileExtension) {
+    switch (fileExtension) {
         case '.html':
             return 'text/html';
+        case '.css':
+            return 'text/css';
         case '.js':
             return 'text/javascript';
-        case '.css':
-            return 'text/css'; // Add this line to serve CSS files
+        case '.json':
+            return 'application/json';
+        case '.png':
+            return 'image/png';
+        case '.jpg':
+            return 'image/jpg';
         default:
-            return 'text/plain';
+            return 'application/octet-stream';
     }
-}
+};
 
