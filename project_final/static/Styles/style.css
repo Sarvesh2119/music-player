@@ -95,12 +95,12 @@ margin-left: auto;
     
 }
 .listhead{
-text-align:center;}
+text-align: center;}
 .song-list-container {
   
   overflow-y: auto;
   width: 50%;
-    height:45%;
+    height:40%;
 }
 
 #song-list {
