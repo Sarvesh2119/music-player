@@ -13,8 +13,11 @@
 <div class="container">
         <div id="player">
                 <h1 class="topic">Music Player</h1>
+                <div class="listhead">
+                <h2>Songs</h2>
+               <input type="text" id="searchBar" placeholder="Search for a song...">
+               </div>
         <div class="song-list-container">
-              <h2>Songs</h2>
               <ul id="song-list">
               </ul>
         </div>
@@ -45,8 +48,11 @@
         </div>
         
       <div class="butdiv">
-            <button type="button" id="shuffleButton" onclick="toggleShuffle()"><img src="/static/shuffle.png" class="shuffle"></button>
+            <button type="button" id="shuffleButton" onclick="toggleShuffle()"><img src="/static/shuffle.png"class="shuffle"</button>
         </div>
+        <div class="butdiv">
+    <button type="button" id="loopButton" onclick="toggleLoop()">&#11156;</button>
+  </div>
         
     </div>
     </div>
@@ -277,7 +283,35 @@ songListElement.addEventListener("click", (event) => {
   updateCurrentSongDisplay();
   scrollToTopOfSelectedSong();
 });
+const loopButton = document.getElementById("loopButton");
+let isLooping = false; // Flag to track loop state
 
+function toggleLoop() {
+  isLooping = !isLooping;
+  audioPlayer.loop = isLooping;
+  if (isLooping) {
+    loopButton.classList.add("active");
+  } else {
+    loopButton.classList.remove("active");
+  }
+}
+const searchBar = document.getElementById("searchBar");
+function filterSongs() {
+  const searchTerm = searchBar.value.toLowerCase();
+  const songListItems = songListElement.querySelectorAll("li");
+
+  songListItems.forEach((item) => {
+    const songName = item.textContent.toLowerCase();
+    if (songName.includes(searchTerm)) {
+      item.style.display = "block"; // Display matching songs
+    } else {
+      item.style.display = "none"; // Hide non-matching songs
+    }
+  });
+}
+
+// Add an input event listener to trigger the filtering
+searchBar.addEventListener("input", filterSongs);
 </script>
 </body>
 </html>
