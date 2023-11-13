@@ -1,0 +1,94 @@
+/* static/styles.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+#playerContainer {
+    width: 80%;  /* Set the width to 80% of the viewport */
+    margin: 0 auto; /* Center the container */
+}
+
+#songListContainer {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+#songList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#songList li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#songList li:hover {
+    background-color: #e0e0e0;
+}
+
+#audioPlayer {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+div {
+    text-align: center;
+}
+
+button {
+    padding: 8px 15px; /* Adjust button padding */
+    font-size: 16px;
+    margin: 5px;
+    cursor: pointer;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+     width: 60px; /* Set a fixed width for all buttons */
+    height: 40px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+p {
+    font-size: 18px;
+    color: #333;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 600px) {
+    #playerContainer {
+        width: 90%;  /* Adjust the width for smaller screens */
+    }
+
+    button {
+        font-size: 14px; /* Adjust button font size for smaller screens */
+    }
+}
+#songList li.current {
+    background-color: #4caf50;
+    color: #fff;
+}
+#playPauseButton {
+        font-family: 'Courier New', monospace; /* Use a fixed-width font */
+        text-align: center; /* Center-align the text within the button */
+    }
+    
