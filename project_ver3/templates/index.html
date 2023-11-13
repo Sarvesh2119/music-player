@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Basic Music Player</title>
+</head>
+<body>
+    <h1>Basic Music Player</h1>
+ 
+    <div id="songListContainer">
+    <input type="text" id="searchInput" oninput="filterSongs()" placeholder="Search songs...">
+        <ul id="songList">
+            {% for song in songs %}
+                <li onclick="playSong('{{ song }}')">{{ song }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div>
+        <p id="currentSong">Current Song: {{ songs[currentSongIndex] }}</p>
+    </div>
+
+    <audio id="audioPlayer" controls>
+        Your browser does not support the audio element.
+    </audio>
+
+    <div>
+        <button onclick="playPrevious()">&#171;</button>
+        <button onclick="togglePlayPause()" id="playPauseButton">&#9654;</button>
+        <button onclick="playNext()">&#187;</button>
+        <button onclick="toggleShuffle()" id="shuffleButton">&#10541;</button>
+        <button onclick="toggleLoop()" id="loopButton">&#11156;</button>
+    </div>
+    <script>
+        var songs = {{ songs | tojson }};
+    var originalOrder = songs.slice();  // Make a copy of the original order
+    var shuffledOrder = songs.slice();   // Initialize shuffled order with the original order
+
+    var currentSongIndex = 0;
+    var shuffledSongIndex = 0;  // Keep track of the shuffled index
+    var audioPlayer = document.getElementById('audioPlayer');
+    var songList = document.getElementById('songList');
+    var currentSongElement = document.getElementById('currentSong');
+    var shuffleOn = false;
+
+    var loopOn = false;
+
+    function toggleLoop() {
+        loopOn = !loopOn;
+
+        // Update the color of the loop button based on loopOn
+        var loopButton = document.getElementById('loopButton');
+        if (loopOn) {
+            loopButton.style.backgroundColor = '#2196F3'; // Set the color when loop is on
+        } else {
+            loopButton.style.backgroundColor = '#4caf50'; // Set the color when loop is off
+        }
+    }
+
+    audioPlayer.addEventListener('ended', function() {
+        if (loopOn) {
+            // If loop is on, play the same song again
+            playSong(songs[currentSongIndex]);
+        } else {
+            // If loop is off, play the next song
+            playNext();
+        }
+    });
+
+   function playSong(song) {
+        // Remove the 'current' class from the previously played song
+        var previousSongElement = songList.querySelector('.current');
+        if (previousSongElement) {
+            previousSongElement.classList.remove('current');
+        }
+
+        currentSongIndex = songs.indexOf(song);
+        updateAudioSource();
+        audioPlayer.play();
+        updateCurrentSongDisplay();
+        
+        // Add the 'current' class to the clicked song
+        var currentSongListItem = songList.querySelector('li:nth-child(' + (currentSongIndex + 1) + ')');
+        if (currentSongListItem) {
+            currentSongListItem.classList.add('current');
+        }
+    }
+    function playNext() {
+        if (shuffleOn) {
+            shuffledSongIndex = getRandomIndex();
+            currentSongIndex = songs.indexOf(shuffledOrder[shuffledSongIndex]);
+        } else {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+        }
+        updateAudioSource();
+        audioPlayer.play();
+        updateCurrentSongDisplay();
+
+        // Remove the 'current' class from the previously played song
+        var previousSongElement = songList.querySelector('.current');
+        if (previousSongElement) {
+            previousSongElement.classList.remove('current');
+        }
+
+        // Add the 'current' class to the next song
+        var currentSongListItem = songList.querySelector('li:nth-child(' + (currentSongIndex + 1) + ')');
+        if (currentSongListItem) {
+            currentSongListItem.classList.add('current');
+        }
+    }
+
+    function playPrevious() {
+        if (shuffleOn) {
+            shuffledSongIndex = getRandomIndex();
+            currentSongIndex = songs.indexOf(shuffledOrder[shuffledSongIndex]);
+        } else {
+            currentSongIndex = (currentSongIndex - 1) % songs.length;
+        }
+        updateAudioSource();
+        audioPlayer.play();
+        updateCurrentSongDisplay();
+
+        // Remove the 'current' class from the next song
+        var nextSongElement = songList.querySelector('.current');
+        if (nextSongElement) {
+            nextSongElement.classList.remove('current');
+        }
+
+        // Add the 'current' class to the previously played song
+        var currentSongListItem = songList.querySelector('li:nth-child(' + (currentSongIndex + 1) + ')');
+        if (currentSongListItem) {
+            currentSongListItem.classList.add('current');
+        }
+    }
+
+ function togglePlayPause() {
+        var playPauseButton = document.getElementById('playPauseButton');
+
+        if (audioPlayer.paused) {
+            audioPlayer.play();
+            playPauseButton.innerHTML = '&#9612;&#9612;'; // Pause symbol
+        } else {
+            audioPlayer.pause();
+            playPauseButton.innerHTML = '&#9654;'; // Play symbol
+        }
+    }
+        function toggleShuffle() {
+        shuffleOn = !shuffleOn;
+
+        // Update the color of the shuffle button based on shuffleOn
+        var shuffleButton = document.getElementById('shuffleButton');
+        if (shuffleOn) {
+            shuffleButton.style.backgroundColor = '#f44336'; // Set the color when shuffle is on
+        } else {
+            shuffleButton.style.backgroundColor = '#4caf50'; // Set the color when shuffle is off
+        }
+
+        // ... (rest of your existing toggleShuffle() code)
+    }
+
+        function shuffleSongs() {
+            // Shuffle the internal playlist representation
+            shuffleArray(songs);
+
+            // Start playing the first shuffled song
+            currentSongIndex = 0;
+            updateAudioSource();
+            audioPlayer.play();
+            updateCurrentSongDisplay();
+        }
+
+        function updateAudioSource() {
+            audioPlayer.src = "{{ url_for('play', filename='') }}" + '/' + songs[currentSongIndex];
+        }
+
+        function updateSongList() {
+            songList.innerHTML = '';  // Clear the existing list
+
+            for (var i = 0; i < songs.length; i++) {
+                var listItem = document.createElement('li');
+                listItem.textContent = songs[i];
+                listItem.onclick = function() {
+                    playSong(this.textContent);
+                };
+                songList.appendChild(listItem);
+            }
+        }
+
+        function updateCurrentSongDisplay() {
+            currentSongElement.textContent = "Current Song: " + songs[currentSongIndex];
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function getRandomIndex() {
+            var currentIndex = songs.indexOf(songs[currentSongIndex]);
+            var randomIndex = currentIndex;
+
+            while (randomIndex === currentIndex) {
+                randomIndex = Math.floor(Math.random() * songs.length);
+            }
+
+            return randomIndex;
+        }
+        function toggleLoop() {
+            loopOn = !loopOn;
+
+            // Update the color of the loop button based on loopOn
+            var loopButton = document.getElementById('loopButton');
+            if (loopOn) {
+                loopButton.style.backgroundColor = '#f44336'; // Set the color when loop is on
+                audioPlayer.loop = true;  // Enable looping in the audio player
+            } else {
+                loopButton.style.backgroundColor = '#4caf50'; // Set the color when loop is off
+                audioPlayer.loop = false;  // Disable looping in the audio player
+            }
+        }
+        function filterSongs() {
+        var searchInput = document.getElementById('searchInput');
+        var filter = searchInput.value.toLowerCase();
+        var songListItems = document.querySelectorAll('#songList li');
+
+        songListItems.forEach(function(item) {
+            var songName = item.textContent.toLowerCase();
+            if (songName.includes(filter)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+         audioPlayer.addEventListener('play', function() {
+        var playPauseButton = document.getElementById('playPauseButton');
+        playPauseButton.innerHTML = '&#9612;&#9612;'; // Pause symbol
+    });
+
+    audioPlayer.addEventListener('pause', function() {
+        var playPauseButton = document.getElementById('playPauseButton');
+        playPauseButton.innerHTML = '&#9654;'; // Play symbol
+    });
+    </script>
+</body>
+</html>
+
